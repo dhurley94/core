@@ -97,6 +97,9 @@ if kubectl get secret robot-master-tls; then
 else
   certdir=$(mktemp -d)
   openssl genrsa -out "${certdir}/tls.key" 2048
+  if [[ ! -f ${HOME}/.rnd ]]; then
+    openssl rand -writerand ${HOME}/.rnd
+  fi
   openssl req -x509 -new -nodes -key "${certdir}/tls.key" -subj "/CN=robot-master.default.svc" \
     -days 36500 -reqexts v3_req -extensions v3_ca -out "${certdir}/tls.crt"
   tls_crt=$(openssl base64 -A < ${certdir}/tls.crt)
